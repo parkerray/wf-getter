@@ -1,0 +1,33 @@
+const puppeteer = require("puppeteer");
+const allSites = [
+  "rileyrichter.com",
+  "visualdev.fm",
+  "richmondtillwedie.com",
+];
+let allIds = [];
+
+function getSites() {
+    for (let i of allSites) {
+    let browser;
+
+    try {
+        browser = await puppeteer.launch();
+        let page = await browser.newPage();
+        await page.goto(context.params.url || "https://" + i);
+        let result = await page.evaluate(() => {
+        return document.documentElement.dataset.wfSite;
+        });
+        await browser.close();
+        allIds.push({url: i, id: result});
+    } catch (error) {
+        if (!!browser) {
+        await browser.close();
+        }
+        throw error;
+    }
+    }
+
+    return allIds;
+}
+
+console.log(getSites);
